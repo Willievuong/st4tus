@@ -7,6 +7,8 @@ import NoSsr from '@material-ui/core/NoSsr';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import './TabContainer.css';
+import Paper from '@material-ui/core/Paper';
+import List from '@material-ui/core/List';
 
 function TabContainer(props) {
   return (
@@ -49,13 +51,48 @@ export class NavTabs extends React.Component {
 
     var roommates = ["Roommate One", "Roommate Two", "Roommate Three"]
     
+    var roommateJson = {
+     users: {
+        "userID1": {
+          name: "Arthur",
+          chores: ["vaccuum", "dishes"],
+          messages: ["Pick up milk from store"]
+          },
+        "userID2": {
+          name: "Jake",
+          chores: ["take out trash"],
+          messages: ["Text us when you get home"]
+          },
+        "userID3": {
+          name: "Molly",
+          chores: ["wipe the counters"],
+          messages: ["Pick up milk from store"]
+          },
+        "userID4": {
+          name: "Julie",
+          chores: ["wipe the counters"],
+          messages: ["Pick up milk from store"]
+          }
+        }
+    }
+    
+    var names = [];
+    var choresLists = [];
+    var messagesLists = [];
+    for (var x in roommateJson) {
+        for (var y in roommateJson[x]) {
+          names.push(roommateJson[x][y].name);
+          choresLists.push(roommateJson[x][y].chores);
+          messagesLists.push(roommateJson[x][y].messages);
+        }
+    }
 
 
-    var names = ['One', 'Two', 'Three', 'Four', 'Five'];
     var namesTabs = names.map(function(name){
       return <LinkTab label={name} href={name} />;
      })
-
+   
+     
 
     return (
       <NoSsr>
@@ -67,19 +104,45 @@ export class NavTabs extends React.Component {
               value={value} 
               onChange={this.handleChange}
               >
-              {/* <LinkTab label={roommateOne} href="page1" />
-              <LinkTab label={roommateTwo} href="page2" />
-              <LinkTab label={roommateThree} href="page3" /> */}
-
               { namesTabs }
 
             </Tabs>
           </AppBar>
-          
+          <TabContainer>
+            <Typography variant="h5"> Chores List </Typography>
+           
+            <ol>
+               {choresLists[value].map((toDo) =>
+                  <li key={toDo.toString()}
+                            value={toDo.toString()}> {toDo}
+                            </li>
+                             
+                )}   
+           
 
-          {value === 0 && <TabContainer>roommate one</TabContainer>}
-          {value === 1 && <TabContainer>roommateTwo</TabContainer>}
-          {value === 2 && <TabContainer>roommateThree</TabContainer>}
+            </ol>
+          
+         
+          <br />
+          <Typography variant="h5"> Messages </Typography>
+          
+          <ul>
+               {messagesLists[value].map((toGive) =>
+                  <li key={toGive.toString()}
+                            value={toGive.toString()}> {toGive}
+                            </li>
+                             
+                )}   
+           
+
+            </ul>
+
+
+          </TabContainer>
+
+
+
+
         </div>
       </NoSsr>
     );
