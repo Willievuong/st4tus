@@ -7,8 +7,12 @@ import NoSsr from '@material-ui/core/NoSsr';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import './TabContainer.css';
+import Button from '@material-ui/core/Button';
+import  FormChore  from '../Buttons/FormChore';
 import Paper from '@material-ui/core/Paper';
 import List from '@material-ui/core/List';
+import Grid from '@material-ui/core/Grid';
+import FormMessage from '../Buttons/FormMessage';  
 
 function TabContainer(props) {
   return (
@@ -109,40 +113,57 @@ export class NavTabs extends React.Component {
             </Tabs>
           </AppBar>
           <TabContainer>
+            <Grid container
+              direction="row"
+              justify="space-evenly">
+            <Grid item>
             <Typography variant="h5"> Chores List </Typography>
-           
-            <ol>
+             <ol>
                {choresLists[value].map((toDo) =>
                   <li key={toDo.toString()}
                             value={toDo.toString()}> {toDo}
-                            </li>
-                             
+                            </li>        
                 )}   
-           
-
-            </ol>
-          
-         
-          <br />
-          <Typography variant="h5"> Messages </Typography>
-          
-          <ul>
+              </ol>
+            </Grid>
+            <br />
+            <Grid item>
+          <Typography variant="h5"> Messages </Typography>        
+            <ul>
                {messagesLists[value].map((toGive) =>
                   <li key={toGive.toString()}
                             value={toGive.toString()}> {toGive}
                             </li>
                              
                 )}   
-           
-
             </ul>
-
-
+            </Grid>
+            </Grid>
+            <Grid container
+          
+              direction="row"
+          
+              alignItems="space-evenly"
+              justify="flex-end"
+             >
+         
+          <Grid
+            item nt
+            xs={5}
+            >
+            <FormChore />
+          </Grid>
+          <Grid 
+            item 
+            
+            xs={5}
+          
+          >
+            <FormMessage />
+          </Grid>
+        </Grid>
           </TabContainer>
-
-
-
-
+          
         </div>
       </NoSsr>
     );
