@@ -3,8 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^3.9.1",
     "react": "^16.7.0",
-    "react-dom": "^16.7.0"
+    "react-body-backgroundcolor": "^1.2.1",
+    "react-dom": "^16.7.0",
+    "react-swipeable-views": "^0.13.1"
   },
   "devDependencies": {
     "react-scripts": "2.1.3"
