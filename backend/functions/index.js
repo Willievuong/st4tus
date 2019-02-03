@@ -19,6 +19,7 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const {WebhookClient} = require('dialogflow-fulfillment');
+const https = require('https');
 
 process.env.DEBUG = 'dialogflow:*'; // enables lib debugging statements
 admin.initializeApp(functions.config().firebase);
@@ -27,6 +28,7 @@ const db = admin.firestore();
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
   const agent = new WebhookClient({ request, response });
 
+  /* Given  */
   function writeToDb (agent) {
     // Get parameter from Dialogflow with the string to add to the database
     const databaseEntry = agent.parameters.databaseEntry;
@@ -65,7 +67,32 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
       });
   }
 
-  function GetMessages (agent) {
+  /* End of Given */
+
+  function getMessages (agent) {
+    // Get the database collection 'dialogflow' and document 'agent'
+    const dialogflowAgentDoc = db.collection('messages').doc('Test');
+    const userList = db.collection('users');
+    console.log(userList);
+
+    // Get the value of 'entry' in the document and send it to the user
+    return dialogflowAgentDoc.get()
+      .then(doc => {
+        if (!doc.exists) {
+          agent.add('No data found in the database!');
+        } else {
+          agent.add(doc.data().message);
+        }
+        return Promise.resolve('Read complete');
+      }).catch((err) => {
+        //console.log(err);
+        agent.add(err);
+        agent.add('Error reading entry from the Firestore database.');
+        agent.add('Please add a entry to the database first by saying, "Write <your phrase> to the database"');
+      });
+  }
+
+  function getChores (agent) {
     // Get the database collection 'dialogflow' and document 'agent'
     const dialogflowAgentDoc = db.collection('messages').doc('Test');
 
@@ -86,7 +113,74 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
       });
   }
 
-  function GetChores (agent) {
+  function addMessages (agent) {
+     // Get parameter from Dialogflow with the string to add to the database
+    
+     const databaseName = agent.parameters.name
+     const databaseEntry = agent.parameters.message
+    //const userList = db.collection('users').doc();
+    const userList = db.collection('users')
+    var found = 0; 
+    userList.get()
+    .then(snapshot => {
+      var userid = null; 
+      snapshot.forEach(doc => {
+        console.log(doc.id, '=>', doc.data());
+        console.log("CHECKING ", databaseName, "WITH",  doc.data().name);
+        if(databaseName === doc.data().name){
+          userid = doc.id;
+          return doc.id; //TODO: RETURN SUCCESSFUL PROMISE
+        }
+        console.log("AFTER IF STATEMENT");
+      });
+      // eslint-disable-next-line no-throw-literal
+      return userid;
+    })
+    .catch(err => {
+      console.log('Error getting documents', err);
+    })
+    .then((userId) => {
+      /* Adding the item to the database */
+      console.log(userId); 
+      const dialogflowAgentRef = db.collection('users').doc(userId).collection("messages").add({
+        message: databaseEntry
+      });
+      return null;
+      // return db.runTransaction(t => {
+      //   t.set(
+      //     message, 
+      //     {entry: databaseEntry});
+      //   return Promise.resolve('Write complete');
+      // }).then(doc => {
+      //   agent.add(`Wrote "${databaseEntry}" to the Firestore database.`);
+      //   return null; 
+      // }).catch(err => {
+      //   console.log(`Error writing to Firestore: ${err}`);
+      //   agent.add(`Failed to write "${databaseEntry}" to the Firestore database.`);
+      // });
+    }).catch(err => {
+      console.log("Error", err); 
+    });
+    
+    console.log("I GOT HERE");
+    // Get the database collection 'dialogflow' and document 'agent' and store
+    // the document  {entry: "<value of database entry>"} in the 'agent' document
+    // const dialogflowAgentRef = db.collection('users').doc(userid);
+    // return db.runTransaction(t => {
+    //   t.set(
+    //     dialogflowAgentRef, 
+    //     {entry: databaseEntry});
+    //   return Promise.resolve('Write complete');
+    // }).then(doc => {
+    //   agent.add(`Wrote "${databaseEntry}" to the Firestore database.`);
+    //   return null; 
+    // }).catch(err => {
+    //   console.log(`Error writing to Firestore: ${err}`);
+    //   agent.add(`Failed to write "${databaseEntry}" to the Firestore database.`);
+    // });
+  }
+
+  function addChores (agent) {
     // Get the database collection 'dialogflow' and document 'agent'
     const dialogflowAgentDoc = db.collection('messages').doc('Test');
 
@@ -107,7 +201,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
       });
   }
 
-  function AddMessages (agent) {
+  function removeMessages (agent) {
     // Get the database collection 'dialogflow' and document 'agent'
     const dialogflowAgentDoc = db.collection('messages').doc('Test');
 
@@ -128,49 +222,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
       });
   }
 
-  function AddChores (agent) {
-    // Get the database collection 'dialogflow' and document 'agent'
-    const dialogflowAgentDoc = db.collection('messages').doc('Test');
-
-    // Get the value of 'entry' in the document and send it to the user
-    return dialogflowAgentDoc.get()
-      .then(doc => {
-        if (!doc.exists) {
-          agent.add('No data found in the database!');
-        } else {
-          agent.add(doc.data().message);
-        }
-        return Promise.resolve('Read complete');
-      }).catch((err) => {
-        //console.log(err);
-        agent.add(err);
-        agent.add('Error reading entry from the Firestore database.');
-        agent.add('Please add a entry to the database first by saying, "Write <your phrase> to the database"');
-      });
-  }
-
-  function RemoveMessages (agent) {
-    // Get the database collection 'dialogflow' and document 'agent'
-    const dialogflowAgentDoc = db.collection('messages').doc('Test');
-
-    // Get the value of 'entry' in the document and send it to the user
-    return dialogflowAgentDoc.get()
-      .then(doc => {
-        if (!doc.exists) {
-          agent.add('No data found in the database!');
-        } else {
-          agent.add(doc.data().message);
-        }
-        return Promise.resolve('Read complete');
-      }).catch((err) => {
-        //console.log(err);
-        agent.add(err);
-        agent.add('Error reading entry from the Firestore database.');
-        agent.add('Please add a entry to the database first by saying, "Write <your phrase> to the database"');
-      });
-  }
-
-  function RemoveChores (agent) {
+  function removeChores (agent) {
     // Get the database collection 'dialogflow' and document 'agent'
     const dialogflowAgentDoc = db.collection('messages').doc('Test');
 
@@ -195,11 +247,11 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
   let intentMap = new Map();
   intentMap.set('ReadFromFirestore', readFromDb);
   intentMap.set('WriteToFirestore', writeToDb);
-  intentMap.set('GetMessages', GetMessages);
-  intentMap.set('GetChores', GetMessages);
-  intentMap.set('AddMessages', GetMessages);
-  intentMap.set('AddChores', GetMessages);
-  intentMap.set('RemoveMessages', GetMessages);
-  intentMap.set('RemoveMessages', GetMessages);
+  intentMap.set('getMessages', getMessages);
+  intentMap.set('getChores', getChores);
+  intentMap.set('addMessages', addMessages);
+  intentMap.set('addChores', addChores);
+  intentMap.set('removeMessages', removeMessages);
+  intentMap.set('removeChores', removeChores);
   agent.handleRequest(intentMap);
 });
