@@ -64,14 +64,15 @@ exports.getUser = functions.https.onRequest((request, response) => {
                     console.log("Check spot 6")
                     messages.push(doc.data().message)
                     //console.log(doc.data().message)
-                })  
+                })
+                var finalResult = {
+                    IDs, 
+                    chores, 
+                    messages,
+                }
+                    response.send(finalResult)  
             }).catch( err => {console.log(err)})
-            var finalResult = {
-                IDs, 
-                chores, 
-                messages,
-            }
-                //response.send(finalResult)
+            
             
     
         }
