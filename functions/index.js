@@ -66,11 +66,11 @@ exports.getUser = functions.https.onRequest((request, response) => {
                     //console.log(doc.data().message)
                 })
                 var finalResult = {
-                    IDs, 
-                    chores, 
-                    messages,
-                }
-                    response.send(finalResult)  
+                IDs, 
+                chores, 
+                messages,
+            }
+                response.send(finalResult)  
             }).catch( err => {console.log(err)})
             
             
