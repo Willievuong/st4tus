@@ -146,38 +146,11 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
         message: databaseEntry
       });
       return null;
-      // return db.runTransaction(t => {
-      //   t.set(
-      //     message, 
-      //     {entry: databaseEntry});
-      //   return Promise.resolve('Write complete');
-      // }).then(doc => {
-      //   agent.add(`Wrote "${databaseEntry}" to the Firestore database.`);
-      //   return null; 
-      // }).catch(err => {
-      //   console.log(`Error writing to Firestore: ${err}`);
-      //   agent.add(`Failed to write "${databaseEntry}" to the Firestore database.`);
-      // });
+
     }).catch(err => {
       console.log("Error", err); 
     });
-    
-    console.log("I GOT HERE");
-    // Get the database collection 'dialogflow' and document 'agent' and store
-    // the document  {entry: "<value of database entry>"} in the 'agent' document
-    // const dialogflowAgentRef = db.collection('users').doc(userid);
-    // return db.runTransaction(t => {
-    //   t.set(
-    //     dialogflowAgentRef, 
-    //     {entry: databaseEntry});
-    //   return Promise.resolve('Write complete');
-    // }).then(doc => {
-    //   agent.add(`Wrote "${databaseEntry}" to the Firestore database.`);
-    //   return null; 
-    // }).catch(err => {
-    //   console.log(`Error writing to Firestore: ${err}`);
-    //   agent.add(`Failed to write "${databaseEntry}" to the Firestore database.`);
-    // });
+
   }
 
   function addChores (agent) {
